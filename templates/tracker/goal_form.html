@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Goal - SkillTracker{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="fas fa-target me-2"></i>Set New Learning Goal
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    {% if form.errors %}
+                        <div class="alert alert-danger">
+                            {% for field, errors in form.errors.items %}
+                                <strong>{{ field|title }}:</strong>
+                                {% for error in errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.skill.id_for_label }}" class="form-label">Skill</label>
+                                <select class="form-select" name="{{ form.skill.name }}" id="{{ form.skill.id_for_label }}" required>
+                                    <option value="">Select a skill...</option>
+                                    {% for skill in form.skill.field.queryset %}
+                                        <option value="{{ skill.id }}" {% if form.skill.value == skill.id %}selected{% endif %}>
+                                            {{ skill.name }} ({{ skill.get_category_display }} - {{ skill.get_difficulty_display }})
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.deadline.id_for_label }}" class="form-label">Deadline</label>
+                                <input type="date" class="form-control" name="{{ form.deadline.name }}" 
+                                       id="{{ form.deadline.id_for_label }}" 
+                                       value="{{ form.deadline.value|default:'' }}" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.title.id_for_label }}" class="form-label">Goal Title</label>
+                        <input type="text" class="form-control" name="{{ form.title.name }}" 
+                               id="{{ form.title.id_for_label }}" 
+                               value="{{ form.title.value|default:'' }}" 
+                               placeholder="e.g., Complete React tutorial, Build a portfolio website..." required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                        <textarea class="form-control" name="{{ form.description.name }}" 
+                                  id="{{ form.description.id_for_label }}" rows="4" 
+                                  placeholder="Describe your goal in detail...">{{ form.description.value|default:'' }}</textarea>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-target me-1"></i>Create Goal
+                        </button>
+                        <a href="{% url 'tracker:goal_list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% block title %}Learning Resources - SkillTracker{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>
+                <i class="fas fa-book me-2"></i>My Learning Resources
+            </h1>
+            <a href="{% url 'tracker:resource_add' %}" class="btn btn-success">
+                <i class="fas fa-plus me-1"></i>Add New Resource
+            </a>
+        </div>
+    </div>
+</div>
+
+{% if resources %}
+    <div class="row">
+        {% for resource in resources %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0">{{ resource.title|truncatechars:30 }}</h6>
+                        <span class="badge bg-{% if resource.resource_type == 'video' %}danger{% elif resource.resource_type == 'article' %}info{% elif resource.resource_type == 'course' %}warning{% elif resource.resource_type == 'book' %}success{% else %}secondary{% endif %}">
+                            {{ resource.get_resource_type_display }}
+                        </span>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <div class="mb-2">
+                            <strong>Skill:</strong> 
+                            <span class="badge bg-primary">{{ resource.skill.name }}</span>
+                        </div>
+                        
+                        <div class="mb-2">
+                            <strong>Status:</strong> 
+                            {% if resource.is_completed %}
+                                <span class="badge bg-success">
+                                    <i class="fas fa-check me-1"></i>Completed
+                                </span>
+                            {% else %}
+                                <span class="badge bg-warning">
+                                    <i class="fas fa-clock me-1"></i>In Progress
+                                </span>
+                            {% endif %}
+                        </div>
+                        
+                        {% if resource.notes %}
+                            <div class="mb-2">
+                                <strong>Notes:</strong>
+                                <p class="text-muted small">{{ resource.notes|truncatewords:15 }}</p>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="mt-auto">
+                            <small class="text-muted">Added: {{ resource.created_at|date:"M d, Y" }}</small>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="d-flex gap-2">
+                            <a href="{{ resource.url }}" target="_blank" class="btn btn-sm btn-primary flex-fill">
+                                <i class="fas fa-external-link-alt me-1"></i>Open Resource
+                            </a>
+                            <form method="post" action="{% url 'tracker:resource_toggle' resource.pk %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm {% if resource.is_completed %}btn-outline-warning{% else %}btn-outline-success{% endif %}">
+                                    {% if resource.is_completed %}
+                                        <i class="fas fa-undo"></i>
+                                    {% else %}
+                                        <i class="fas fa-check"></i>
+                                    {% endif %}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    
+    
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">Filter by Type</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="?type=" class="btn btn-sm btn-outline-secondary">All</a>
+                        <a href="?type=video" class="btn btn-sm btn-outline-danger">Videos</a>
+                        <a href="?type=article" class="btn btn-sm btn-outline-info">Articles</a>
+                        <a href="?type=course" class="btn btn-sm btn-outline-warning">Courses</a>
+                        <a href="?type=documentation" class="btn btn-sm btn-outline-primary">Documentation</a>
+                        <a href="?type=book" class="btn btn-sm btn-outline-success">Books</a>
+                        <a href="?type=other" class="btn btn-sm btn-outline-dark">Other</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+    {% if is_paginated %}
+        <nav aria-label="Resources pagination">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1">First</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                    </li>
+                {% endif %}
+                
+                <li class="page-item active">
+                    <span class="page-link">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                </li>
+                
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+    
+{% else %}
+    <div class="text-center">
+        <div class="card">
+            <div class="card-body py-5">
+                <i class="fas fa-book fa-3x text-muted mb-3"></i>
+                <h4>No Resources Added Yet</h4>
+                <p class="text-muted">Start organizing your learning materials!</p>
+                <a href="{% url 'tracker:resource_add' %}" class="btn btn-success">
+                    <i class="fas fa-plus me-1"></i>Add Your First Resource
+                </a>
+            </div>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

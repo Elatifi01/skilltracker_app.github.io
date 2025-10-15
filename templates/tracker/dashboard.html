@@ -1,0 +1,285 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - SkillTracker{% endblock %}
+
+{% block extra_css %}
+
+{% endblock %}
+
+{% block content %}
+<!-- Main dashboard content -->
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">
+            <i class="fas fa-tachometer-alt me-2"></i>Learning Dashboard
+        </h1>
+    </div>
+</div>
+
+<!-- Statistics cards section -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>{{ total_skills }}</h4>
+                        <p class="mb-0">Available Skills</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-brain fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>{{ total_hours|floatformat:1 }}</h4>
+                        <p class="mb-0">Hours Logged</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-clock fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>{{ completed_goals }}</h4>
+                        <p class="mb-0">Goals Completed</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-check-circle fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>{{ pending_goals }}</h4>
+                        <p class="mb-0">Pending Goals</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-target fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-plus me-2"></i>Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <a href="{% url 'tracker:progress_add' %}" class="btn btn-outline-primary w-100 mb-2">
+                            <i class="fas fa-plus me-1"></i>Log Progress
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{% url 'tracker:goal_add' %}" class="btn btn-outline-success w-100 mb-2">
+                            <i class="fas fa-target me-1"></i>Add Goal
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{% url 'tracker:skill_add' %}" class="btn btn-outline-info w-100 mb-2">
+                            <i class="fas fa-brain me-1"></i>Add Skill
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{% url 'tracker:resource_add' %}" class="btn btn-outline-warning w-100 mb-2">
+                            <i class="fas fa-book me-1"></i>Add Resource
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Daily Progress (Last 14 Days)</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="dailyProgressChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-chart-pie me-2"></i>Learning by Category</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="categoryChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-clock me-2"></i>Recent Progress</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_progress %}
+                    {% for entry in recent_progress %}
+                        <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                            <div>
+                                <strong>{{ entry.skill.name }}</strong>
+                                <br>
+                                <small class="text-muted">{{ entry.date }} - {{ entry.hours_spent }}h</small>
+                            </div>
+                            <span class="badge bg-{{ entry.skill.category|default:'secondary' }}">
+                                {{ entry.skill.get_category_display }}
+                            </span>
+                        </div>
+                    {% endfor %}
+                    <div class="text-center mt-3">
+                        <a href="{% url 'tracker:progress_list' %}" class="btn btn-sm btn-outline-primary">
+                            View All Progress
+                        </a>
+                    </div>
+                {% else %}
+                    <p class="text-muted text-center">No recent progress entries.</p>
+                    <div class="text-center">
+                        <a href="{% url 'tracker:progress_add' %}" class="btn btn-primary">
+                            Log Your First Progress
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-calendar me-2"></i>Upcoming Deadlines</h5>
+            </div>
+            <div class="card-body">
+                {% if upcoming_deadlines %}
+                    {% for goal in upcoming_deadlines %}
+                        <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                            <div>
+                                <strong>{{ goal.title }}</strong>
+                                <br>
+                                <small class="text-muted">{{ goal.skill.name }} - {{ goal.deadline }}</small>
+                            </div>
+                            <span class="badge bg-{% if goal.deadline|timesince < '3 days' %}danger{% elif goal.deadline|timesince < '7 days' %}warning{% else %}info{% endif %}">
+                                {{ goal.deadline|timeuntil }}
+                            </span>
+                        </div>
+                    {% endfor %}
+                    <div class="text-center mt-3">
+                        <a href="{% url 'tracker:goal_list' %}" class="btn btn-sm btn-outline-primary">
+                            View All Goals
+                        </a>
+                    </div>
+                {% else %}
+                    <p class="text-muted text-center">No upcoming deadlines.</p>
+                    <div class="text-center">
+                        <a href="{% url 'tracker:goal_add' %}" class="btn btn-primary">
+                            Set Your First Goal
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<script>
+// Daily Progress Chart
+const dailyProgressCtx = document.getElementById('dailyProgressChart').getContext('2d');
+const dailyData = {{ daily_data|safe }};
+const dailyLabels = dailyData.map(item => item.date);
+const dailyValues = dailyData.map(item => item.hours);
+
+new Chart(dailyProgressCtx, {
+    type: 'line',
+    data: {
+        labels: dailyLabels,
+        datasets: [{
+            label: 'Hours Practiced',
+            data: dailyValues,
+            borderColor: 'rgb(75, 192, 192)',
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            tension: 0.1
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+// Category Chart
+const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+const categoryData = {{ category_data|safe }};
+const categoryLabels = Object.keys(categoryData);
+const categoryValues = Object.values(categoryData);
+
+new Chart(categoryCtx, {
+    type: 'doughnut',
+    data: {
+        labels: categoryLabels,
+        datasets: [{
+            data: categoryValues,
+            backgroundColor: [
+                '#FF6384',
+                '#36A2EB',
+                '#FFCE56',
+                '#4BC0C0',
+                '#9966FF',
+                '#FF9F40'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

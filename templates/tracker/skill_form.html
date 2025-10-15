@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Skill - SkillTracker{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="fas fa-brain me-2"></i>Add New Skill
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    {% if form.errors %}
+                        <div class="alert alert-danger">
+                            {% for field, errors in form.errors.items %}
+                                <strong>{{ field|title }}:</strong>
+                                {% for error in errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.name.id_for_label }}" class="form-label">Skill Name</label>
+                        <input type="text" class="form-control" name="{{ form.name.name }}" 
+                               id="{{ form.name.id_for_label }}" 
+                               value="{{ form.name.value|default:'' }}" 
+                               placeholder="e.g., Python, React, Machine Learning..." required>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.category.id_for_label }}" class="form-label">Category</label>
+                                <select class="form-select" name="{{ form.category.name }}" id="{{ form.category.id_for_label }}" required>
+                                    <option value="">Select category...</option>
+                                    <option value="frontend" {% if form.category.value == 'frontend' %}selected{% endif %}>Frontend Development</option>
+                                    <option value="backend" {% if form.category.value == 'backend' %}selected{% endif %}>Backend Development</option>
+                                    <option value="mobile" {% if form.category.value == 'mobile' %}selected{% endif %}>Mobile Development</option>
+                                    <option value="data" {% if form.category.value == 'data' %}selected{% endif %}>Data Science</option>
+                                    <option value="devops" {% if form.category.value == 'devops' %}selected{% endif %}>DevOps</option>
+                                    <option value="design" {% if form.category.value == 'design' %}selected{% endif %}>Design</option>
+                                    <option value="other" {% if form.category.value == 'other' %}selected{% endif %}>Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.difficulty.id_for_label }}" class="form-label">Difficulty</label>
+                                <select class="form-select" name="{{ form.difficulty.name }}" id="{{ form.difficulty.id_for_label }}" required>
+                                    <option value="">Select difficulty...</option>
+                                    <option value="easy" {% if form.difficulty.value == 'easy' %}selected{% endif %}>Easy</option>
+                                    <option value="medium" {% if form.difficulty.value == 'medium' %}selected{% endif %}>Medium</option>
+                                    <option value="hard" {% if form.difficulty.value == 'hard' %}selected{% endif %}>Hard</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                        <textarea class="form-control" name="{{ form.description.name }}" 
+                                  id="{{ form.description.id_for_label }}" rows="3" 
+                                  placeholder="Describe this skill...">{{ form.description.value|default:'' }}</textarea>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-brain me-1"></i>Add Skill
+                        </button>
+                        <a href="{% url 'tracker:skill_list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

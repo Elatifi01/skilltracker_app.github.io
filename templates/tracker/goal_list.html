@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block title %}My Goals - SkillTracker{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>
+                <i class="fas fa-target me-2"></i>My Learning Goals
+            </h1>
+            <a href="{% url 'tracker:goal_add' %}" class="btn btn-success">
+                <i class="fas fa-plus me-1"></i>Add New Goal
+            </a>
+        </div>
+    </div>
+</div>
+
+{% if goals %}
+    <div class="row">
+        {% for goal in goals %}
+            <div class="col-md-6 mb-4">
+                <div class="card {% if goal.completed %}border-success{% elif goal.deadline < today %}border-danger{% elif goal.deadline|timeuntil < '7 days' %}border-warning{% endif %}">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            {% if goal.completed %}
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                            {% else %}
+                                <i class="fas fa-clock text-muted me-2"></i>
+                            {% endif %}
+                            {{ goal.title }}
+                        </h5>
+                        <form method="post" action="{% url 'tracker:goal_toggle' goal.pk %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm {% if goal.completed %}btn-outline-warning{% else %}btn-outline-success{% endif %}">
+                                {% if goal.completed %}
+                                    <i class="fas fa-undo me-1"></i>Mark Incomplete
+                                {% else %}
+                                    <i class="fas fa-check me-1"></i>Mark Complete
+                                {% endif %}
+                            </button>
+                        </form>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <strong>Skill:</strong> 
+                            <span class="badge bg-primary ">{{ goal.skill.name }}</span>
+                        </div>
+                        
+                        <div class="mb-2">
+                            <strong>Deadline:</strong> 
+                            <span class="{% if goal.deadline < today and not goal.completed %}text-danger{% elif goal.deadline|timeuntil < '7 days' and not goal.completed %}text-warning{% endif %}">
+                                {{ goal.deadline }}
+                                {% if not goal.completed %}
+                                    ({{ goal.deadline|timeuntil }} remaining)
+                                {% endif %}
+                            </span>
+                        </div>
+                        
+                        {% if goal.completed %}
+                            <div class="mb-2">
+                                <strong>Completed:</strong> <span class="text-success">{{ goal.completed_date }}</span>
+                            </div>
+                        {% endif %}
+                        
+                        {% if goal.description %}
+                            <div class="mb-2">
+                                <strong>Description:</strong>
+                                <p class="text-muted mb-0">{{ goal.description|truncatewords:20 }}</p>
+                            </div>
+                        {% endif %}
+                        
+                        <small class="text-muted">Created: {{ goal.created_at|date:"M d, Y" }}</small>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    
+    
+    {% if is_paginated %}
+        <nav aria-label="Goals pagination">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1">First</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                    </li>
+                {% endif %}
+                
+                <li class="page-item active">
+                    <span class="page-link">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                </li>
+                
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+    
+{% else %}
+    <div class="text-center">
+        <div class="card">
+            <div class="card-body py-5">
+                <i class="fas fa-target fa-3x text-muted mb-3"></i>
+                <h4>No Goals Yet</h4>
+                <p class="text-muted">Start setting learning goals to track your progress!</p>
+                <a href="{% url 'tracker:goal_add' %}" class="btn btn-success">
+                    <i class="fas fa-plus me-1"></i>Create Your First Goal
+                </a>
+            </div>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}
