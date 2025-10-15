@@ -75,17 +75,21 @@ WSGI_APPLICATION = 'skilltracker.wsgi.application'
 
 # Database
 
+
+
 import dj_database_url
+from pathlib import Path
 
-
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL'),
+        default=f'sqlite:///{BASE_DIR / "db.sqlite3"}',  # fallback for local dev
         conn_max_age=600,
-        ssl_require=True
+        ssl_require=True  # required for Railway Postgres
     )
 }
+
 
 
 
