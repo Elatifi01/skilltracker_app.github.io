@@ -73,14 +73,22 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'skilltracker.wsgi.application'
 
+# Database
+
 import dj_database_url
-import os
+
+
+
 DATABASES = {
-    "default": dj_database_url.config(
-        default="sqlite:///db.sqlite3",  # fallback for local dev
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL'),
         conn_max_age=600,
+        ssl_require=True
     )
 }
+
+
+
 # For local development, you can uncomment the following DATABASES setting
 # and comment out the dj_database_url part above.
 #   DATABASES = {
