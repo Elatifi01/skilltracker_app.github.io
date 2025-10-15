@@ -13,15 +13,19 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+#for railway deployment#
+import os
 
+#SECRET_KEY = 'django-insecure-y@^v^0ssf%7o%hv=_=oo&9%rsr$2ww&o(7@a*jp3@@^n(t($3)'#
 
+SECRET_KEY = os.getenv("SECRET_KEY", "fallback-secret-for-dev-only")
 
-SECRET_KEY = 'django-insecure-y@^v^0ssf%7o%hv=_=oo&9%rsr$2ww&o(7@a*jp3@@^n(t($3)'
+#DEBUG = False#
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
-DEBUG = False
-
-ALLOWED_HOSTS = ['skilltrackerappgithubio-production.up.railway.app', 'localhost', '127.0.0.1']
-CSRF_TRUSTED_ORIGINS = ['https://skilltrackerappgithubio-production.up.railway.app']
+#ALLOWED_HOSTS = ['skilltrackerappgithubio-production.up.railway.app', 'localhost', '127.0.0.1']#
+#CSRF_TRUSTED_ORIGINS = ['https://skilltrackerappgithubio-production.up.railway.app']#
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
 # installed apps for the project
 INSTALLED_APPS = [
