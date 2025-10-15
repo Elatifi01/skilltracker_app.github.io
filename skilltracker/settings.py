@@ -73,24 +73,33 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'skilltracker.wsgi.application'
 
-# Database
+#  configuration
 
 
+import dj_database_url
+import os
+from pathlib import Path
 
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+import os
 import dj_database_url
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Local SQLite
 DATABASES = {
-    'default': dj_database_url.config(
-        default=f'sqlite:///{BASE_DIR / "db.sqlite3"}',  # fallback for local dev
-        conn_max_age=600,
-        ssl_require=True  # required for Railway Postgres
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
 
-
+# If DATABASE_URL exists (Railway/Postgres), use it
+DATABASE_URL = os.environ.get('DATABASE_URL')
+if DATABASE_URL:
+    DATABASES['default'] = dj_database_url.parse(DATABASE_URL, conn_max_age=600)
 
 
 # For local development, you can uncomment the following DATABASES setting
