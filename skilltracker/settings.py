@@ -89,17 +89,19 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Local SQLite
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+
 
 # If DATABASE_URL exists (Railway/Postgres), use it
-DATABASE_URL = os.environ.get('DATABASE_URL')
-if DATABASE_URL:
-    DATABASES['default'] = dj_database_url.parse(DATABASE_URL, conn_max_age=600)
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "railway",
+        "USER": "postgres",
+        "PASSWORD": "xVbYtHJZdfdACBSumSJIhuweYQXSTDbH",
+        "HOST": "shuttle.proxy.rlwy.net",
+        "PORT": "31414",
+    }
+}
 
 
 # For local development, you can uncomment the following DATABASES setting
