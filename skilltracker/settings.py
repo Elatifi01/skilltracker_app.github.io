@@ -26,6 +26,8 @@ DEBUG = os.getenv("DEBUG", "False") == "True"
 #ALLOWED_HOSTS = ['skilltrackerappgithubio-production.up.railway.app', 'localhost', '127.0.0.1']#
 #CSRF_TRUSTED_ORIGINS = ['https://skilltrackerappgithubio-production.up.railway.app']#
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",")
+
 
 # installed apps for the project
 INSTALLED_APPS = [
