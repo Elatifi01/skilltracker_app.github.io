@@ -18,10 +18,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-y@^v^0ssf%7o%hv=_=oo&9%rsr$2ww&o(7@a*jp3@@^n(t($3)'
 
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['skilltrackerappgithubio-production.up.railway.app', 'localhost', '127.0.0.1']
+CSRF_TRUSTED_ORIGINS = ['https://skilltrackerappgithubio-production.up.railway.app']
 
 # installed apps for the project
 INSTALLED_APPS = [
